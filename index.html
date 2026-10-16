@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Anschaulicher Reisevergleich von zehn Reisezielen mit Reisezeit, Aktivitäten, Vor- und Nachteilen sowie geschätzten Kosten.">
+<title>Reisevergleich – 10 Reiseziele</title>
+<style>
+:root{
+ --bg:#f4f7fb;--panel:#fff;--ink:#152238;--muted:#607086;--line:#dce5ef;
+ --blue:#245b78;--blue2:#367f9f;--accent:#f3a847;--good:#187b62;--shadow:0 12px 34px rgba(22,42,68,.09);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;line-height:1.55}
+a{color:var(--blue)}
+button,input,select{font:inherit}
+.hero{background:linear-gradient(120deg,#14213d 0%,#245b78 58%,#367f9f 100%);color:#fff;padding:64px 20px 48px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;width:380px;height:380px;border:1px solid #ffffff22;border-radius:50%;right:-100px;top:-180px;box-shadow:0 0 0 45px #ffffff0b,0 0 0 90px #ffffff08}
+.wrap{width:min(1160px,calc(100% - 36px));margin:auto}
+.kicker{text-transform:uppercase;letter-spacing:.15em;font-size:.76rem;font-weight:800;color:#c9e8f3}
+.hero h1{font-size:clamp(2.2rem,5vw,4.4rem);line-height:1.03;max-width:800px;margin:14px 0}
+.hero p{max-width:720px;color:#e2edf5;font-size:1.1rem}
+.hero-tags{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}
+.pill{border:1px solid #ffffff4c;background:#ffffff13;border-radius:99px;padding:7px 12px;font-size:.88rem}
+main{padding:28px 0 64px}
+.toolbar{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:12px;background:var(--panel);border:1px solid var(--line);padding:16px;border-radius:18px;box-shadow:var(--shadow);margin-bottom:24px}
+.field label{display:block;font-size:.78rem;font-weight:800;color:var(--muted);margin:0 0 5px}
+.field input,.field select{width:100%;border:1px solid var(--line);background:#fbfdff;border-radius:10px;padding:11px 12px;color:var(--ink)}
+.section-head{display:flex;justify-content:space-between;align-items:end;gap:18px;margin:30px 0 16px}
+.section-head h2{margin:0;font-size:1.65rem;line-height:1.2}
+.section-head p{margin:5px 0 0;color:var(--muted)}
+.count{color:var(--muted);font-size:.9rem;white-space:nowrap}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:17px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:0 5px 20px #18324c0a;display:flex;flex-direction:column;min-width:0;transition:transform .18s,box-shadow .18s}
+.card:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+.card-top{padding:21px 21px 16px;color:white;min-height:152px;position:relative;overflow:hidden}
+.card-top:after{content:attr(data-symbol);position:absolute;right:13px;bottom:-24px;font-size:6.8rem;opacity:.16;line-height:1}
+.card-top .number{font-size:.75rem;font-weight:800;letter-spacing:.12em;opacity:.85}
+.card-top h3{margin:8px 0 5px;font-size:1.5rem;line-height:1.15;position:relative;z-index:1}
+.card-top p{margin:0;max-width:82%;font-size:.9rem;color:#ffffffdc;position:relative;z-index:1}
+.card-body{padding:18px 20px 20px;display:flex;flex-direction:column;gap:12px;flex:1}
+.cost{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.cost strong{font-size:1.35rem;color:var(--blue)}
+.cost span{font-size:.78rem;color:var(--muted)}
+.meta{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.meta div{background:#f4f7fb;border-radius:10px;padding:9px 10px}
+.meta small{display:block;color:var(--muted);font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em}
+.meta b{font-size:.9rem}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{font-size:.76rem;padding:5px 8px;border-radius:7px;background:#eaf3f7;color:#245b78;font-weight:700}
+.card-actions{display:flex;gap:8px;margin-top:auto}
+.btn{border:0;border-radius:10px;padding:10px 13px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:7px;text-decoration:none}
+.btn-primary{background:var(--blue);color:white;flex:1}
+.btn-secondary{background:#eef3f8;color:var(--ink);border:1px solid var(--line)}
+.btn:hover{filter:brightness(1.05)}
+.empty{grid-column:1/-1;padding:30px;text-align:center;border:1px dashed var(--line);border-radius:16px;color:var(--muted)}
+.compare-wrap{overflow-x:auto;border-radius:16px;border:1px solid var(--line);background:#fff;box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;min-width:780px}
+th,td{text-align:left;padding:13px 14px;border-bottom:1px solid var(--line);vertical-align:top;font-size:.88rem}
+th{background:#eaf1f7;color:#29445c;font-size:.78rem;text-transform:uppercase;letter-spacing:.04em}
+tr:last-child td{border-bottom:0}
+tbody tr:nth-child(even){background:#fafcff}
+.feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.feature{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px}
+.feature .emoji{font-size:1.7rem}
+.feature h3{margin:8px 0 5px;font-size:1.08rem}
+.feature p{margin:0;color:var(--muted);font-size:.92rem}
+.note{margin-top:20px;padding:16px 18px;border-radius:14px;background:#fff7e9;border:1px solid #f4d6a4;color:#66471d;font-size:.9rem}
+footer{background:#14213d;color:#dbe5f0;padding:28px 0;font-size:.85rem}
+footer p{margin:5px 0}
+dialog{border:0;border-radius:20px;padding:0;width:min(720px,calc(100% - 24px));max-height:88vh;box-shadow:0 25px 90px #0c1c2d66;color:var(--ink)}
+dialog::backdrop{background:#102034a6;backdrop-filter:blur(4px)}
+.modal-head{padding:23px 25px;background:#edf4f8;display:flex;justify-content:space-between;gap:14px;align-items:start}
+.modal-head h2{margin:0}
+.close{border:0;background:#dce7ef;border-radius:9px;width:36px;height:36px;font-size:1.25rem;cursor:pointer}
+.modal-content{padding:22px 25px 26px;overflow:auto}
+.modal-content h3{font-size:1rem;color:var(--blue);margin:17px 0 5px}
+.modal-content p{margin:0 0 10px}
+.modal-cost{font-size:1.4rem;font-weight:900;color:var(--blue)}
+.modal-columns{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+ul{padding-left:21px;margin-top:5px}
+@media(max-width:900px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.toolbar{grid-template-columns:1fr 1fr}.toolbar .field:first-child{grid-column:1/-1}.feature-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.hero{padding:46px 0 34px}.wrap{width:min(100% - 24px,1160px)}.grid{grid-template-columns:1fr}.toolbar{grid-template-columns:1fr}.toolbar .field:first-child{grid-column:auto}.section-head{align-items:start;flex-direction:column}.feature-grid{grid-template-columns:1fr}.modal-columns{grid-template-columns:1fr}.card-top{min-height:135px}}
+@media print{.hero{padding:25px;color:#fff}.toolbar,.card-actions,footer,.section-head .count{display:none!important}body{background:white}.grid{grid-template-columns:repeat(2,1fr)}.card{break-inside:avoid;box-shadow:none}.wrap{width:100%}.card-top{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
+</style>
+</head>
+<body>
+<header class="hero">
+ <div class="wrap">
+  <div class="kicker">Reiseplanung · Inspiration · Budget</div>
+  <h1>10 Reiseziele.<br>Unzählige Möglichkeiten.</h1>
+  <p>Ein übersichtlicher Vergleich für alle, die Naturwunder, Action, besondere Sehenswürdigkeiten und unvergessliche Erlebnisse suchen.</p>
+  <div class="hero-tags">
+   <span class="pill">✈️ Flugkosten im Überblick</span>
+   <span class="pill">🏨 Unterkünfte & Budget</span>
+   <span class="pill">🌋 Natur & Abenteuer</span>
+   <span class="pill">🧭 Reisezeit & Tipps</span>
+  </div>
+ </div>
+</header>
+<main class="wrap">
+ <section class="toolbar" aria-label="Reiseziele filtern">
+  <div class="field"><label for="search">Reiseziel oder Aktivität suchen</label><input id="search" type="search" placeholder="z. B. Safari, Freizeitpark, Strand …"></div>
+  <div class="field"><label for="budget">Gesamtbudget pro Person</label><select id="budget"><option value="all">Alle Budgets</option><option value="2500">Bis 2.500 €</option><option value="3000">Bis 3.000 €</option><option value="4000">Bis 4.000 €</option><option value="5000">Bis 5.000 €</option></select></div>
+  <div class="field"><label for="interest">Reisestil</label><select id="interest"><option value="all">Alle Interessen</option><option value="action">Action & Freizeitparks</option><option value="nature">Natur & Outdoor</option><option value="culture">Kultur & Städte</option><option value="beach">Strand & Erholung</option></select></div>
+ </section>
+
+ <div class="section-head">
+  <div><h2>Reiseziele entdecken</h2><p>Öffne ein Ziel für Details, Vor- und Nachteile sowie eine Kostenorientierung.</p></div>
+  <div class="count" id="count" aria-live="polite">10 Reiseziele</div>
+ </div>
+ <section class="grid" id="cards" aria-live="polite"></section>
+
+ <section>
+  <div class="section-head"><div><h2>Direkter Kostenvergleich</h2><p>Grobe Richtwerte pro Person – keine Live-Angebote.</p></div></div>
+  <div class="compare-wrap">
+   <table>
+    <thead><tr><th>Reiseziel</th><th>Beste Reisezeit (grob)</th><th>Flug hin & zurück</th><th>Gesamtbudget</th><th>Stärke</th></tr></thead>
+    <tbody id="table-body"></tbody>
+   </table>
+  </div>
+ </section>
+
+ <section>
+  <div class="section-head"><div><h2>Welche Reise passt zu dir?</h2><p>Ein paar schnelle Entscheidungshilfen für die Vorauswahl.</p></div></div>
+  <div class="feature-grid">
+   <article class="feature"><div class="emoji">🎢</div><h3>Action & Freizeitparks</h3><p><b>Japan oder Kalifornien</b> – Themenparks, Großstädte und spektakuläre Tagesausflüge. Kalifornien ist häufig autoabhängiger und teurer.</p></article>
+   <article class="feature"><div class="emoji">🌿</div><h3>Natur & Abenteuer</h3><p><b>Costa Rica, Peru, Island oder Südafrika</b> – Regenwald, Anden, Gletscher, Wasserfälle und Tierbeobachtungen.</p></article>
+   <article class="feature"><div class="emoji">💸</div><h3>Preis-Leistung</h3><p><b>Vietnam oder Thailand</b> – vor Ort oft günstiger, mit Streetfood, Landschaften, Stränden und vielen Aktivitäten.</p></article>
+   <article class="feature"><div class="emoji">🏯</div><h3>Kultur & moderne Städte</h3><p><b>Japan oder Südkorea</b> – gute öffentliche Verkehrsmittel, spannende Esskultur und moderne wie traditionelle Viertel.</p></article>
+   <article class="feature"><div class="emoji">🏖️</div><h3>Strand & Geschichte</h3><p><b>Mexiko oder Thailand</b> – archäologische Stätten, Inseln, Cenoten, Küste und regionale Küche.</p></article>
+   <article class="feature"><div class="emoji">🦁</div><h3>Safari & Landschaft</h3><p><b>Südafrika</b> – Tierbeobachtung, Berge und Küste; Sicherheits- und Fahrplanung sorgfältig berücksichtigen.</p></article>
+  </div>
+ </section>
+ <div class="note"><b>Wichtiger Hinweis:</b> Alle Preise sind grobe Planungsschätzungen und keine bestätigten Angebote. Flugpreise, Saison, Reisedauer, Wechselkurse, Buchungszeitpunkt und Reisestil können die Kosten deutlich verändern. Unterkunftskosten sind meist als Doppelzimmer geteilt kalkuliert. Prüfe vor einer Buchung aktuelle Einreisebestimmungen, Sicherheits- und Wetterhinweise.</div>
+</main>
+<footer><div class="wrap"><b>Reisevergleich · 10 Reiseziele</b><p>Planungsstand: Oktober 2026 · Die Seite ist eine eigenständige HTML-Datei und funktioniert ohne externe Bibliotheken oder Internetverbindung.</p><p>Tipp: Im Browser über „Drucken“ lässt sich die Seite auch als PDF speichern.</p></div></footer>
+
+<dialog id="detail">
+ <div class="modal-head"><div><div class="kicker" style="color:#367f9f">Reiseziel im Detail</div><h2 id="modal-title"></h2></div><button class="close" id="close" aria-label="Schließen">×</button></div>
+ <div class="modal-content" id="modal-content"></div>
+</dialog>
+<script>
+const destinations = [
+ {name:"Japan",symbol:"🗾",color:"linear-gradient(120deg,#9d344d,#d66b78)",subtitle:"Tradition, Megastädte & Achterbahnen",best:"März–Mai und Oktober–November",flight:"800–1.300 €",low:2700,high:4000,total:"2.700–4.000 €",stay:"65–130 € pro Zimmer/Nacht",duration:"ca. 14 Nächte",strength:"Freizeitparks & Kultur",interests:["action","nature","culture"],tags:["Freizeitparks","Anime & Shopping","Bahnreise","Kultur"],activities:"Tokyo DisneySea oder Disneyland, Fuji-Q Highland, TeamLab, Pokémon- und Anime-Shopping, Onsen und Wanderungen.",sights:"Tokio, Kyoto, Osaka, Fuji/Kawaguchiko, Nara, Schreine, Gärten und traditionelle Viertel.",pros:"Sehr gute Bahn-Infrastruktur, viel Vielfalt, Kultur und moderne Städte, ausgezeichnetes Essen.",cons:"Lange Anreise; beliebte Orte sind voll; Unterkunft und Bahnfahrten summieren sich. Im frühen Frühjahr kann es kalt sein.",budget:"14 Nächte mit Flug, Unterkunft, Verkehr, Essen und ausgewählten Eintritten. Shopping und teure Express-Pässe extra.",durationNote:"Für eine ausgewogene Rundreise sind zwei Wochen gut geeignet.",tip:"Eine Route mit wenigen Hotelwechseln planen; beliebte Freizeitparks und besondere Unterkünfte rechtzeitig buchen."},
+ {name:"Thailand",symbol:"🏝️",color:"linear-gradient(120deg,#087f8c,#45b6a4)",subtitle:"Tropen, Streetfood & Inselabenteuer",best:"November–Februar (regional unterschiedlich)",flight:"650–1.050 €",low:1800,high:3000,total:"1.800–3.000 €",stay:"25–90 € pro Zimmer/Nacht",duration:"ca. 14 Nächte",strength:"Strand & Abenteuer",interests:["action","nature","beach","culture"],tags:["Strand","Streetfood","Schnorcheln","Inseln"],activities:"Streetfood-Touren, Schnorcheln, Tauchen, Ziplining, Kajak, Nationalparks, Nachtmärkte und Inselhopping.",sights:"Bangkok, Chiang Mai, Ayutthaya, Krabi, Phuket oder Koh Samui – passend zur Saison auswählen.",pros:"Gutes Preis-Leistungs-Verhältnis vor Ort, abwechslungsreich, gutes Essen und Strand plus Action.",cons:"Hitze und Luftfeuchtigkeit; saisonale Regenfälle; Inlandswechsel kosten Zeit; Bootsverbindungen sind wetterabhängig.",budget:"14 Nächte inklusive Flug, Unterkunft, Essen, Transfers und Aktivitäten. Tauchen und Privattouren extra.",durationNote:"Zwei Wochen reichen für eine Stadt plus eine Natur- oder Inselregion.",tip:"Die Küste nicht nur nach Fotos auswählen: Die passende Seite des Landes hängt von der Reisezeit ab."},
+ {name:"Costa Rica",symbol:"🌋",color:"linear-gradient(120deg,#2b7a4b,#87b65a)",subtitle:"Regenwald, Vulkane & Adrenalin",best:"Dezember–April an vielen Pazifikorten",flight:"800–1.300 €",low:2800,high:4500,total:"2.800–4.500 €",stay:"60–150 € pro Zimmer/Nacht",duration:"ca. 14 Nächte",strength:"Natur & Outdoor",interests:["action","nature","beach"],tags:["Ziplining","Rafting","Wildtiere","Vulkane"],activities:"Ziplining, Rafting, Canyoning, Surfen, Nachtwanderungen, Thermalquellen und geführte Dschungeltouren.",sights:"Arenal-Vulkan, Monteverde-Nebelwald, Manuel Antonio, Tortuguero und Strände am Pazifik oder der Karibik.",pros:"Hervorragend für Natur und Abenteuer, hohe Artenvielfalt und viele geführte Outdoor-Angebote.",cons:"Relativ teuer für Mittelamerika; Fahrten dauern lange; Mietwagen oder Shuttle sind oft hilfreich.",budget:"14 Nächte inklusive Flug, Unterkunft, Essen, Transport und mehreren Touren. Mietwagen und Einweggebühren können erhöhen.",durationNote:"Mindestens zwei Wochen sind sinnvoll, wenn mehrere Regionen kombiniert werden.",tip:"Weniger Stopps und mehr Nächte je Region sparen Zeit auf teils langsamen Straßen."},
+ {name:"Kalifornien",symbol:"🌉",color:"linear-gradient(120deg,#b85c2e,#e8a45c)",subtitle:"Themenparks, Pazifikküste & Roadtrip",best:"April–Juni und September–Oktober",flight:"650–1.100 €",low:3000,high:5000,total:"3.000–5.000 €",stay:"110–230 € pro Zimmer/Nacht",duration:"ca. 14 Nächte",strength:"Freizeitparks & Roadtrip",interests:["action","nature","culture","beach"],tags:["Universal Studios","Disneyland","Nationalparks","Roadtrip"],activities:"Universal Studios Hollywood, Disneyland Resort, Achterbahnen, Surfen, Wanderungen, Sportevents und Roadtrip.",sights:"Los Angeles, San Francisco, Highway 1, Yosemite, Sequoia und Joshua Tree – nicht alles in zwei Wochen erzwingen.",pros:"Große Auswahl an Freizeitparks, Landschaften und Großstädten; ideal für Entertainment und Roadtrip.",cons:"Hohe Kosten, große Entfernungen und Parkgebühren; Mietwagen außerhalb einzelner Städte oft praktisch nötig.",budget:"14 Nächte inklusive Flug, Unterkunft, Mietwagen/Transport, Essen und einigen Attraktionen. Mehrere Parktage können stark aufschlagen.",durationNote:"Eine klare Route zwischen Südkalifornien oder Nordkalifornien wählen.",tip:"Einwegmieten, Parktickets und Hotelparkplätze früh in die Gesamtkalkulation aufnehmen."},
+ {name:"Mexiko",symbol:"🪇",color:"linear-gradient(120deg,#b06b22,#d9a441)",subtitle:"Maya-Stätten, Cenoten & Küsten",best:"November–April an vielen Küstenorten",flight:"700–1.200 €",low:2200,high:3700,total:"2.200–3.700 €",stay:"45–130 € pro Zimmer/Nacht",duration:"ca. 14 Nächte",strength:"Kultur & Strand",interests:["nature","culture","beach","action"],tags:["Maya-Stätten","Cenoten","Küche","Strände"],activities:"Cenoten-Schwimmen, Schnorcheln, Tauchen, Dschungeltouren, Kochkurse und Bootsausflüge.",sights:"Mexiko-Stadt, Teotihuacán, Oaxaca, Chichén Itzá, Tulum und Cenoten auf Yucatán – besser eine Region fokussieren.",pros:"Kultur, archäologische Stätten, Natur und Strände; gutes Essen und viele Aktivitäten.",cons:"Sicherheitslage und Verkehr unterscheiden sich regional; lange Strecken; touristische Küstenorte können teuer sein.",budget:"14 Nächte inklusive Flug, Unterkunft, Essen, Transport und Ausflügen. Resorturlaub und private Touren kosten mehr.",durationNote:"Für zwei Wochen entweder Yucatán oder Mexiko-Stadt plus eine weitere Region planen.",tip:"Aktuelle regionale Sicherheitshinweise beachten und Transfers über verlässliche Anbieter organisieren."},
+ {name:"Südkorea",symbol:"🌆",color:"linear-gradient(120deg,#344f91,#7898d6)",subtitle:"Popkultur, Paläste & Küsten",best:"April–Mai und September–Oktober",flight:"750–1.200 €",low:2300,high:3600,total:"2.300–3.600 €",stay:"60–130 € pro Zimmer/Nacht",duration:"ca. 14 Nächte",strength:"Städte & Popkultur",interests:["action","nature","culture"],tags:["Seoul","K-Pop","Streetfood","Wandern"],activities:"Lotte World, Everland, K-Pop- und Gaming-Viertel, Wandern, Karaoke, Streetfood und Badehäuser.",sights:"Seoul, Gyeongju, Busan, Paläste, traditionelle Hanok-Viertel und Küstenlandschaften.",pros:"Schneller öffentlicher Verkehr, moderne Städte, Popkultur, Essen und Natur lassen sich gut kombinieren.",cons:"Sprachbarrieren außerhalb touristischer Bereiche; volle Metropolen; manche Naturziele brauchen Zusatzplanung.",budget:"14 Nächte inklusive Flug, Unterkunft, Verkehr, Essen und Sehenswürdigkeiten. Shopping und große Events extra.",durationNote:"Eine Kombination aus Seoul und Busan ist für zwei Wochen gut machbar.",tip:"Unterkünfte nahe Metrostationen erleichtern die Orientierung und sparen Fahrzeit."},
+ {name:"Vietnam",symbol:"⛵",color:"linear-gradient(120deg,#a42c36,#d76555)",subtitle:"Karstberge, Streetfood & Entdeckungen",best:"März–April kann für mehrere Regionen ein Kompromiss sein",flight:"650–1.100 €",low:1700,high:2900,total:"1.700–2.900 €",stay:"25–80 € pro Zimmer/Nacht",duration:"ca. 14 Nächte",strength:"Preis-Leistung & Landschaft",interests:["action","nature","culture","beach"],tags:["Kajak","Höhlen","Streetfood","Trekking"],activities:"Kajak in der Halong-Bucht, Höhlentouren, Motorradtouren mit Guide, Kochkurse, Trekking und Strandtage.",sights:"Hanoi, Ninh Binh, Ha Long, Hội An, Huế und Ho-Chi-Minh-Stadt; lange Distanzen berücksichtigen.",pros:"Günstiges Essen und viele Unterkünfte, starke Landschaftsvielfalt, Kultur und Abenteuer.",cons:"Lange Transferzeiten zwischen Regionen; Verkehr ist gewöhnungsbedürftig; Wetter variiert stark.",budget:"14 Nächte inklusive Flug, Unterkunft, Essen, Transfers und Aktivitäten. Private Touren und Komfortzüge erhöhen den Preis.",durationNote:"Lieber Nord- oder Südvietnam vertiefen statt die gesamte Küste in kurzer Zeit abzufahren.",tip:"Für lange Distanzen Nachtzug oder Inlandsflug mit Reisezeit und Gepäckregeln vergleichen."},
+ {name:"Peru",symbol:"⛰️",color:"linear-gradient(120deg,#87512e,#c58a58)",subtitle:"Anden, alte Kulturen & große Weiten",best:"Mai–September im Andenhochland meist trockener",flight:"850–1.400 €",low:2500,high:4000,total:"2.500–4.000 €",stay:"35–100 € pro Zimmer/Nacht",duration:"ca. 14 Nächte",strength:"Trekking & Geschichte",interests:["action","nature","culture"],tags:["Machu Picchu","Anden","Trekking","Wüste"],activities:"Trekking, Mountainbiking, Sandboarding bei Huacachina, Bootstouren und geführte Anden-Ausflüge.",sights:"Cusco, Heiliges Tal, Machu Picchu, Arequipa, Colca Canyon und Lima – Höhenanpassung einplanen.",pros:"Spektakuläre Berglandschaften, Geschichte, einzigartige archäologische Orte und Outdoor-Erlebnisse.",cons:"Höhenkrankheit möglich; Transfers und Höhenanpassung brauchen Zeit; Machu-Picchu-Tickets früh buchen.",budget:"14 Nächte inklusive Flug, Unterkunft, Essen, Inlandsverkehr und Hauptausflügen. Trekking und Machu-Picchu-Pakete variieren stark.",durationNote:"Die ersten Tage nicht zu voll planen, damit der Körper sich an die Höhe gewöhnen kann.",tip:"Machu-Picchu-Eintritt und passende Zug-/Busverbindungen früh abstimmen."},
+ {name:"Südafrika",symbol:"🦁",color:"linear-gradient(120deg,#286a53,#76a47b)",subtitle:"Safari, Küstenstraßen & Berge",best:"September–November und März–Mai als grobe Kompromisse",flight:"650–1.100 €",low:2300,high:4000,total:"2.300–4.000 €",stay:"45–130 € pro Zimmer/Nacht",duration:"ca. 14 Nächte",strength:"Safari & Landschaft",interests:["action","nature","culture","beach"],tags:["Safari","Tafelberg","Küste","Wildtiere"],activities:"Safari, Küstenwanderungen, Kajak, saisonale Walbeobachtung, Weingüter und Abenteuerangebote.",sights:"Kapstadt, Tafelberg, Kap-Halbinsel, Garden Route und Kruger-Nationalpark – Route für zwei Wochen begrenzen.",pros:"Große landschaftliche Vielfalt, Tierbeobachtung, Berge und Küste; oft gutes Preis-Leistungs-Verhältnis vor Ort.",cons:"Sicherheits- und Verkehrsplanung wichtig; lange Strecken; Mietwagen oft sinnvoll; Safaris können teuer sein.",budget:"14 Nächte inklusive Flug, Unterkunft, Mietwagen, Essen und ausgewählten Aktivitäten. Safari-Lodges extra.",durationNote:"Kapregion plus Garden Route oder Kapregion plus Safari sind zwei sinnvolle, aber unterschiedliche Routen.",tip:"Fahrten nicht nach reiner Kilometerzahl kalkulieren und lokale Hinweise zu Sicherheit beachten."},
+ {name:"Island",symbol:"❄️",color:"linear-gradient(120deg,#315b8b,#75a9c9)",subtitle:"Wasserfälle, Gletscher & Vulkane",best:"Juni–August für lange Tage; September–März für Polarlichtchancen",flight:"250–600 €",low:2000,high:3800,total:"2.000–3.800 €*",stay:"100–220 € pro Zimmer/Nacht",duration:"7–10 Nächte kalkuliert",strength:"Naturwunder",interests:["action","nature"],tags:["Wasserfälle","Gletscher","Vulkane","Heiße Quellen"],activities:"Gletscherwanderung mit Guide, heiße Quellen, Lava-Höhlen, saisonale Schneemobil-Touren, Wandern und Walbeobachtung.",sights:"Golden Circle, Südküste, Wasserfälle, schwarze Strände, Gletscherlagunen und – bei längerer Reise – Snæfellsnes.",pros:"Außergewöhnliche Natur auf relativ kurzer Anreise; Wasserfälle, Vulkane und Gletscher.",cons:"Hohe Lebensmittel- und Unterkunftskosten; Wetterwechsel; im Winter kurze Tage und Straßen-/Sturmrisiken.",budget:"7–10 Nächte inklusive Flug, Unterkunft, Mietwagen/Transport, Essen und einigen Touren. 14 Nächte und Ringstraße kosten meist mehr.",durationNote:"Die Ringstraße ist für einen kurzen Urlaub ambitioniert; eine kompakte Südküstenroute ist entspannter.",tip:"Wetter- und Straßenlage täglich prüfen und für Wintertouren ausreichend Puffer lassen."}
+];
+
+const $ = id => document.getElementById(id);
+function escapeHtml(str){return String(str).replace(/[&<>"']/g, m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));}
+function render(){
+ const q=$("search").value.trim().toLowerCase(), max=$("budget").value, interest=$("interest").value;
+ const filtered=destinations.filter(d=>{
+  const text=[d.name,d.subtitle,d.best,d.strength,d.activities,d.sights,d.tags.join(" "),d.pros].join(" ").toLowerCase();
+  return (!q||text.includes(q))&&(max==="all"||d.low<=Number(max))&&(interest==="all"||d.interests.includes(interest));
+ });
+ $("count").textContent=`${filtered.length} von ${destinations.length} Reisezielen`;
+ $("cards").innerHTML=filtered.length?filtered.map((d,i)=>`
+  <article class="card">
+   <div class="card-top" style="background:${d.color}" data-symbol="${d.symbol}">
+    <div class="number">REISEZIEL ${String(destinations.indexOf(d)+1).padStart(2,"0")}</div>
+    <h3>${escapeHtml(d.name)}</h3><p>${escapeHtml(d.subtitle)}</p>
+   </div>
+   <div class="card-body">
+    <div class="cost"><strong>${escapeHtml(d.total)}</strong><span>pro Person · geschätzt</span></div>
+    <div class="meta"><div><small>Beste Reisezeit</small><b>${escapeHtml(d.best)}</b></div><div><small>Flug hin & zurück</small><b>${escapeHtml(d.flight)}</b></div></div>
+    <div class="tags">${d.tags.map(t=>`<span class="tag">${escapeHtml(t)}</span>`).join("")}</div>
+    <div class="card-actions"><button class="btn btn-primary" data-detail="${destinations.indexOf(d)}">Details ansehen ↗</button><button class="btn btn-secondary" data-compare="${destinations.indexOf(d)}" title="Zum Vergleich hervorheben">＋</button></div>
+   </div>
+  </article>`).join(""):`<div class="empty">Keine Reiseziele gefunden. Passe deine Suche oder Filter an.</div>`;
+ $("table-body").innerHTML=destinations.map((d,i)=>({d,i})).filter(({d})=>{
+  const text=[d.name,d.subtitle,d.activities,d.sights,d.tags.join(" ")].join(" ").toLowerCase();
+  return (!q||text.includes(q))&&(max==="all"||d.low<=Number(max))&&(interest==="all"||d.interests.includes(interest));
+ }).map(({d})=>`<tr><td><b>${escapeHtml(d.name)}</b></td><td>${escapeHtml(d.best)}</td><td>${escapeHtml(d.flight)}</td><td><b>${escapeHtml(d.total)}</b></td><td>${escapeHtml(d.strength)}</td></tr>`).join("");
+ document.querySelectorAll("[data-detail]").forEach(b=>b.addEventListener("click",()=>showDetail(destinations[Number(b.dataset.detail)])));
+ document.querySelectorAll("[data-compare]").forEach(b=>b.addEventListener("click",()=>{
+  const d=destinations[Number(b.dataset.compare)];
+  $("search").value=d.name; $("budget").value="all"; $("interest").value="all"; render();
+  window.scrollTo({top:document.querySelector(".toolbar").offsetTop-15,behavior:"smooth"});
+ }));
+}
+function showDetail(d){
+ $("modal-title").textContent=d.name;
+ $("modal-content").innerHTML=`
+  <p class="modal-cost">${escapeHtml(d.total)} <span style="font-size:.8rem;font-weight:500;color:#607086">pro Person · grobe Schätzung</span></p>
+  <div class="modal-columns">
+   <div><h3>🗓️ Reisezeit & Dauer</h3><p><b>Beste Reisezeit:</b> ${escapeHtml(d.best)}</p><p><b>Empfohlene Dauer:</b> ${escapeHtml(d.duration)}</p><p>${escapeHtml(d.durationNote)}</p>
+   <h3>✈️ Flugkosten</h3><p>${escapeHtml(d.flight)} (Hin- und Rückflug, Richtwert)</p>
+   <h3>🏨 Unterkünfte</h3><p>${escapeHtml(d.stay)}</p></div>
+   <div><h3>🎯 Aktivitäten</h3><p>${escapeHtml(d.activities)}</p>
+   <h3>📍 Sehenswürdigkeiten</h3><p>${escapeHtml(d.sights)}</p>
+   <h3>💶 Was enthält das Budget?</h3><p>${escapeHtml(d.budget)}</p></div>
+  </div>
+  <div class="modal-columns"><div><h3>✓ Vorteile</h3><p>${escapeHtml(d.pros)}</p></div><div><h3>! Nachteile</h3><p>${escapeHtml(d.cons)}</p></div></div>
+  <h3>💡 Planungstipp</h3><p>${escapeHtml(d.tip)}</p>`;
+ $("detail").showModal();
+}
+["search","budget","interest"].forEach(id=>$(id).addEventListener(id==="search"?"input":"change",render));
+$("close").addEventListener("click",()=>$("detail").close());
+$("detail").addEventListener("click",e=>{if(e.target===$("detail"))$("detail").close()});
+render();
+</script>
+</body>
+</html>
